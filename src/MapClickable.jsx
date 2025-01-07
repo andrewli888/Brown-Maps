@@ -1,0 +1,66 @@
+import { MapContainer, TileLayer, useMapEvent, Marker, Popup, Circle } from 'react-leaflet';
+import PropTypes from 'prop-types';
+
+// console.time('getdistances')
+// for (const courseData of courseLocationsData) {
+//   const dist = getPreciseDistance(
+//     { latitude: 41.82407368517098, longitude: -71.39942740321514 },
+//     { latitude: courseData['latitude'], longitude: courseData['longitude'] },
+//   )
+//   console.log(`${dist}: ${courseData['api_address']}`);
+// }
+// console.timeEnd('getdistances')
+
+function MarkerManager({ onClick }) {
+  useMapEvent('click', (e) => {
+    const { lat, lng } = e.latlng;
+    // Add marker to list of markers
+    onClick({ lat, lng });
+  })
+  return null;
+}
+
+function MapClickable({ markers, selectedMarker, radius, onMapClick, onSelectMarker, onRemoveMarker }) {
+  return (
+    <MapContainer center={[41.8268, -71.4025]} zoom={18}>
+      <MarkerManager onClick={onMapClick}/>
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      {markers.map((latlng, index) => (
+        <Marker 
+          key={index} 
+          position={latlng} 
+          eventHandlers={{
+            click: () => onSelectMarker(index),
+            dblclick: () => onRemoveMarker(index)
+          }}>
+          <Popup>
+            Marker {index + 1}
+          </Popup>
+        </Marker>
+      ))}
+      { selectedMarker && <Circle center={ [selectedMarker['lat'], selectedMarker['lng']] } radius={radius} />}
+    </MapContainer>
+  )
+}
+
+// Prop validation
+MarkerManager.propTypes = {
+  onClick: PropTypes.func.isRequired
+}
+
+MapClickable.propTypes = {
+  markers: PropTypes.array,
+  selectedMarker: PropTypes.shape({
+    'lat': PropTypes.number,
+    'lng': PropTypes.number,
+  }),
+  radius: PropTypes.number,
+  onMapClick: PropTypes.func,
+  onSelectMarker: PropTypes.func,
+  onRemoveMarker: PropTypes.func
+}
+
+export default MapClickable;
