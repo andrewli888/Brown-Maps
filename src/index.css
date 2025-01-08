@@ -62,3 +62,7 @@ html, body {
   margin-bottom: 8px;
 }
 
+.results-item:hover {
+  background-color: #d9d2c1;
+  cursor: pointer;
+}
