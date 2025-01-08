@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { getDistance } from 'geolib';
 import courseLocationsData from './data/course_locations.json'
 
-const WALKDISTANCE = 320;
+const WALKDISTANCE = 300; // Using 300m as estimate for 5 minute walk
 
 function getNearbyCourses(latlng) {
   return courseLocationsData.filter((course) => {
@@ -16,7 +16,7 @@ function getNearbyCourses(latlng) {
       { latitude: latlng['lat'], longitude: latlng['lng'] },
       { latitude: course['latitude'], longitude: course['longitude'] }
     );
-    return distanceInMeters <= WALKDISTANCE; // Using 400m as distance for 5-minute walk
+    return distanceInMeters <= WALKDISTANCE; 
   })
 }
 
