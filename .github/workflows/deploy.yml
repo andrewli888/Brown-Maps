@@ -1,0 +1,32 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main] # Triggers the workflow on pushes to the main branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest # Uses a virtual machine running Ubuntu
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3 # Checks out your code
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18 # Use a Node.js version compatible with your project
+
+      - name: Install dependencies
+        run: npm ci # Installs dependencies using a clean install
+
+      - name: Build
+        run: npm run build # Runs your build script (e.g., vite build)
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages # The branch to deploy to
+          folder: dist # The folder containing your built files
+          token: ${{ secrets.GITHUB_TOKEN }} # Uses GitHub's built-in token
+          clean: true # Optional: Cleans the gh-pages branch before deploying
