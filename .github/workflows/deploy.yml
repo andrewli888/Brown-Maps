@@ -28,4 +28,5 @@ jobs:
         with:
           branch: gh-pages # The branch to deploy to
           folder: dist # The folder containing your built files
+          token: ${{ secrets.GITHUB_TOKEN }}  # Use the generated token here
           clean: true # Optional: Cleans the gh-pages branch before deploying
