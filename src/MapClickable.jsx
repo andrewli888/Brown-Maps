@@ -6,12 +6,20 @@ import "leaflet/dist/leaflet.css"; // Ensure you import Leaflet's CSS
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
-let DefaultIcon = L.icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow
-});
+// let DefaultIcon = L.icon({
+//   iconUrl: icon,
+//   shadowUrl: iconShadow
+// });
 
-L.Marker.prototype.options.icon = DefaultIcon;
+// L.Marker.prototype.options.icon = DefaultIcon;
+
+// Fix for Leaflet's default marker icon path
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+    iconUrl: icon,
+    shadowUrl: iconShadow
+});
 
 function MarkerManager({ onClick }) {
   useMapEvent('click', (e) => {
