@@ -1,15 +1,17 @@
-import { MapContainer, TileLayer, useMapEvent, Marker, Popup, Circle } from 'react-leaflet';
 import PropTypes from 'prop-types';
+import L from 'leaflet';
+import { MapContainer, TileLayer, useMapEvent, Marker, Popup, Circle } from 'react-leaflet';
+import "leaflet/dist/leaflet.css"; // Ensure you import Leaflet's CSS
 
-// console.time('getdistances')
-// for (const courseData of courseLocationsData) {
-//   const dist = getPreciseDistance(
-//     { latitude: 41.82407368517098, longitude: -71.39942740321514 },
-//     { latitude: courseData['latitude'], longitude: courseData['longitude'] },
-//   )
-//   console.log(`${dist}: ${courseData['api_address']}`);
-// }
-// console.timeEnd('getdistances')
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 function MarkerManager({ onClick }) {
   useMapEvent('click', (e) => {
