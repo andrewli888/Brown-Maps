@@ -25,7 +25,7 @@ function App() {
   const [selectedIndex, setSelectedIndex] = useState(null);
 
   const selectedMarker = (selectedIndex == null) ? null : markers[selectedIndex];
-  const nearbyCourses = (selectedMarker == null) ? [] : getNearbyCourses(selectedMarker)
+  const nearbyCourses = (selectedMarker == null) ? null : getNearbyCourses(selectedMarker)
 
   function handleMapClick(latlng) {
     const newMarkers = [...markers, latlng];
