@@ -23,7 +23,7 @@ function MarkerManager({ onClick }) {
 
 function MapClickable({ markers, selectedMarker, radius, onMapClick, onSelectMarker, onRemoveMarker }) {
   return (
-    <MapContainer center={[41.8268, -71.4025]} zoom={18}>
+    <MapContainer center={[41.8268, -71.4025]} zoom={17}>
       <MarkerManager onClick={onMapClick}/>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
