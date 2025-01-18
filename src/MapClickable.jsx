@@ -1,16 +1,18 @@
 import PropTypes from 'prop-types';
 import L from 'leaflet';
-import { MapContainer, TileLayer, useMapEvent, Marker, Popup, Circle } from 'react-leaflet';
+import { MapContainer, TileLayer, useMapEvent, Marker, Circle } from 'react-leaflet';
 import "leaflet/dist/leaflet.css"; // Ensure you import Leaflet's CSS
 
-// Manually set marker image, otherwise it doesn't get shown
+// Manually set marker image for leaflet map, otherwise not shown for some reason
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-    iconUrl: icon,
-    shadowUrl: iconShadow
+let DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25,41], 
+  iconAnchor: [12,41]
 });
+L.Marker.prototype.options.icon = DefaultIcon;
 
 function MarkerManager({ onClick }) {
   useMapEvent('click', (e) => {
@@ -21,7 +23,7 @@ function MarkerManager({ onClick }) {
   return null;
 }
 
-function MapClickable({ markers, selectedMarker, radius, onMapClick, onSelectMarker, onRemoveMarker }) {
+function MapClickable({ marker, radius, onMapClick }) {
   return (
     <MapContainer center={[41.8268, -71.4025]} zoom={17}>
       <MarkerManager onClick={onMapClick}/>
@@ -29,20 +31,8 @@ function MapClickable({ markers, selectedMarker, radius, onMapClick, onSelectMar
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {markers.map((latlng, index) => (
-        <Marker 
-          key={index} 
-          position={latlng} 
-          eventHandlers={{
-            click: () => onSelectMarker(index),
-            dblclick: () => onRemoveMarker(index)
-          }}>
-          <Popup>
-            Marker {index + 1}
-          </Popup>
-        </Marker>
-      ))}
-      { selectedMarker && <Circle center={ [selectedMarker['lat'], selectedMarker['lng']] } radius={radius} />}
+      { marker && <Marker position={marker} />}
+      { marker && <Circle center={ [marker['lat'], marker['lng']] } radius={radius} />}
     </MapContainer>
   )
 }
@@ -53,15 +43,12 @@ MarkerManager.propTypes = {
 }
 
 MapClickable.propTypes = {
-  markers: PropTypes.array,
-  selectedMarker: PropTypes.shape({
+  marker: PropTypes.shape({
     'lat': PropTypes.number,
     'lng': PropTypes.number,
   }),
   radius: PropTypes.number,
-  onMapClick: PropTypes.func,
-  onSelectMarker: PropTypes.func,
-  onRemoveMarker: PropTypes.func
+  onMapClick: PropTypes.func
 }
 
 export default MapClickable;
