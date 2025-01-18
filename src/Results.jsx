@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import FilterSection from './FilterSection.jsx';
 import PropTypes from 'prop-types';
-import Select from 'react-select';
 // Icons for Settings button and Close button
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog , faTimes} from '@fortawesome/free-solid-svg-icons';
@@ -40,7 +39,7 @@ function Results({ nearbyCourses, handleDepartmentsChange, handleInstructorsChan
           <h1 id="content-title">
             Nearby Courses
           </h1>
-          <ul>
+          <ul style={{ margin: "5px"}}>
             {nearbyCourses === null ? (
               <li>Click on the map to find nearby courses!</li>
             ) : nearbyCourses.length === 0 ? (
