@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types';
-import Select from 'react-select';
+import PropTypes from "prop-types";
+import Select from "react-select";
 
-function FilterSection({ labelText, inputId, selectOptions, handleChange }) {
+function FilterSection({ labelText, inputId, selectOptions, value, handleChange }) {
   return (
     <div className="filter-section">
       <label htmlFor="inputId" className="form-label">
@@ -10,6 +10,7 @@ function FilterSection({ labelText, inputId, selectOptions, handleChange }) {
       <Select
         isMulti
         options={selectOptions}
+        value={value}
         placeholder={`Any ${labelText}`}
         inputId={inputId}
         onChange={handleChange}
@@ -23,7 +24,8 @@ FilterSection.propTypes = {
   labelText: PropTypes.string,
   inputId: PropTypes.string,
   selectOptions: PropTypes.list,
+  value: PropTypes.list,
   handleChange: PropTypes.func,
-}
+};
 
 export default FilterSection;

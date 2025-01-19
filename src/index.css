@@ -23,6 +23,7 @@ html, body {
   color: #333;
 }
 
+/* RESULTS STYLES */
 .content-container {
   position: relative;
   height: 100%;
@@ -61,6 +62,7 @@ html, body {
   cursor: pointer;
 }
 
+/* SETTINGS STYLES */
 .settings-section-container {
   /* background-color: white; */
   padding: 10px 5px;
@@ -73,6 +75,28 @@ html, body {
   padding: 5px 0px;
   font-weight: bold;
 }
+/* .settings-buttons {
+  display: flex;
+  justify-content: space-evenly;
+}
+.settings-buttons button {
+  width: 40%;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+}
+.settings-buttons button:hover {
+  cursor: pointer;
+}
+#save-button {
+  background-color: #7fd19c;
+}
+#cancel-button {
+  background-color: #ff8864;
+} */
 
 /* Toolbar styling */
 .content-container::-webkit-scrollbar {
