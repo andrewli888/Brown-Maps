@@ -1,54 +1,74 @@
-import PropTypes from 'prop-types';
-import L from 'leaflet';
-import { MapContainer, TileLayer, useMapEvent, Marker, Circle } from 'react-leaflet';
-import "leaflet/dist/leaflet.css"; // Ensure you import Leaflet's CSS
+import PropTypes from "prop-types";
+import {
+  MapContainer,
+  TileLayer,
+  useMapEvent,
+  Marker,
+  Circle,
+} from "react-leaflet";
+import "leaflet/dist/leaflet.css"; // Import Leaflet's CSS
 
-// Manually set marker image for leaflet map, otherwise not shown for some reason
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-let DefaultIcon = L.icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
-  iconSize: [25,41], 
-  iconAnchor: [12,41]
+// Create custom marker icons
+import L from "leaflet";
+import mainMarker from "./images/mainMarker.png";
+import coursesMarker from "./images/coursesMarker.png";
+const mainMarkerIcon = L.icon({
+  iconUrl: mainMarker,
+  iconSize: [50, 50],
+  iconAnchor: [25, 45],
 });
-L.Marker.prototype.options.icon = DefaultIcon;
+const coursesMarkerIcon = L.icon({
+  iconUrl: coursesMarker,
+  iconSize: [30, 30],
+  iconAnchor: [15, 27],
+});
 
 function MarkerManager({ onClick }) {
-  useMapEvent('click', (e) => {
+  useMapEvent("click", (e) => {
     const { lat, lng } = e.latlng;
     // Add marker to list of markers
     onClick({ lat, lng });
-  })
+  });
   return null;
 }
 
-function MapClickable({ marker, radius, onMapClick }) {
+function MapClickable({ marker, nearbyCoursesLocations, radius, onMapClick }) {
+  // console.log(nearbyCoursesLocations);
   return (
     <MapContainer center={[41.8268, -71.4025]} zoom={17}>
-      <MarkerManager onClick={onMapClick}/>
+      <MarkerManager onClick={onMapClick} />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      { marker && <Marker position={marker} />}
-      { marker && <Circle center={ [marker['lat'], marker['lng']] } radius={radius} />}
+      {marker &&
+        <>
+          <Marker position={marker} icon={mainMarkerIcon}/>
+          <Circle center={[marker["lat"], marker["lng"]]} radius={radius} />
+        </>
+      }
+      {nearbyCoursesLocations &&
+        nearbyCoursesLocations.map((latlng, index) => (
+          <Marker key={index} position={latlng} icon={coursesMarkerIcon} ></Marker>
+        ))
+      }
     </MapContainer>
-  )
+  );
 }
 
 // Prop validation
 MarkerManager.propTypes = {
-  onClick: PropTypes.func.isRequired
-}
+  onClick: PropTypes.func.isRequired,
+};
 
 MapClickable.propTypes = {
   marker: PropTypes.shape({
-    'lat': PropTypes.number,
-    'lng': PropTypes.number,
+    lat: PropTypes.number,
+    lng: PropTypes.number,
   }),
+  nearbyCoursesLocations: PropTypes.list,
   radius: PropTypes.number,
-  onMapClick: PropTypes.func
-}
+  onMapClick: PropTypes.func,
+};
 
 export default MapClickable;

@@ -54,9 +54,9 @@ function getNearbyCourses(latlng, departments, instructors, currProgs) {
       return false;
     }
     const distanceInMeters = getDistance(
-      { 
-        latitude: latlng["lat"], 
-        longitude: latlng["lng"] 
+      {
+        latitude: latlng["lat"],
+        longitude: latlng["lng"],
       },
       {
         latitude: course["location_data"]["latitude"],
@@ -65,6 +65,32 @@ function getNearbyCourses(latlng, departments, instructors, currProgs) {
     );
     return distanceInMeters <= WALKDISTANCE;
   });
+}
+
+// Takes a list of course data, returns a list of unique latlng locations of the courses
+function getUniqueLocations(courses) {
+  let uniqueLocations = [];
+  for (const course of courses) {
+    const courseLat = course["location_data"]["latitude"];
+    const courseLng = course["location_data"]["longitude"];
+    let isDuplicate = false;
+    // Check all previous locations (might want to make more efficient with Map)
+    for (const location of uniqueLocations) {
+      if (location["lat"] == courseLat && location["lng"] == courseLng) {
+        isDuplicate = true;
+        break;
+      }
+    }
+    // New location found
+    if (!isDuplicate) {
+      uniqueLocations.push({
+        lat: courseLat,
+        lng: courseLng,
+      });
+    }
+  }
+
+  return uniqueLocations;
 }
 
 function App() {
@@ -85,6 +111,10 @@ function App() {
           selectedInstructors,
           selectedCurrProgs
         );
+
+  // Get a list of unique latlng locations of the nearby courses
+  const nearbyCoursesLocations =
+    nearbyCourses == null ? null : getUniqueLocations(nearbyCourses);
 
   // Event handlers for Results component
   // Changes to filter settings
@@ -116,6 +146,7 @@ function App() {
       />
       <MapClickable
         marker={marker}
+        nearbyCoursesLocations={nearbyCoursesLocations}
         radius={WALKDISTANCE}
         onMapClick={handleMapClick}
       />
