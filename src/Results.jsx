@@ -9,14 +9,16 @@ import { faCog, faTimes } from "@fortawesome/free-solid-svg-icons";
 import uniqueValuesData from "./data/unique_values.json";
 // Maps each item in a list to the correct object format for react select
 function formatForSelect(data) {
-  return data.map(item => ({
+  return data.map((item) => ({
     value: item,
     label: item,
-  }))
+  }));
 }
 const departmentOptions = formatForSelect(uniqueValuesData["department"]);
 const instructorOptions = formatForSelect(uniqueValuesData["instructor"]);
-const currProgOptions = formatForSelect(uniqueValuesData["curricular_programs"]);
+const currProgOptions = formatForSelect(
+  uniqueValuesData["curricular_programs"]
+);
 
 function Results({
   nearbyCourses,
@@ -27,42 +29,55 @@ function Results({
   handleInstructorsChange,
   handleCurrProgsChange,
 }) {
-  const [displayResults, setDisplayResults] = useState(true);
+  const [displayMode, setDisplayMode] = useState("results");
+  // The course that the user is viewing, if it exists
+  const [selectedCourse, setSelectedCourse] = useState(null);
 
-  const handleSettingsClick = () => {
-    setDisplayResults((d) => !d);
+  const handleCourseClick = (course) => {
+    setDisplayMode("singleCourse");
+    setSelectedCourse(course);
   };
 
-  console.log("render");
-  return (
-    <>
-      {displayResults ? (
+  // Determine the content based on display mode
+  let content;
+  switch (displayMode) {
+    case "results":
+      content = (
         <div className="content-container">
           <div id="button-container">
-            <button id="mode-button" onClick={handleSettingsClick}>
+            <button id="mode-button" onClick={() => setDisplayMode("settings")}>
               <FontAwesomeIcon icon={faCog} />
             </button>
           </div>
           <h1 id="content-title">Nearby Courses</h1>
-          <ul style={{ margin: "5px" }}>
-            {nearbyCourses === null ? (
-              <li>Click on the map to find nearby courses!</li>
-            ) : nearbyCourses.length === 0 ? (
-              <li>No nearby courses found.</li>
-            ) : (
-              nearbyCourses.map((course, index) => (
-                <li key={index} className="results-item">
-                  {`${course.course_code} - ${course.course_title}`}
+          {nearbyCourses === null ? (
+            <p>Click on the map to find nearby courses!</p>
+          ) : nearbyCourses.length === 0 ? (
+            <p>No nearby courses found.</p>
+          ) : (
+            <ul className="results-list">
+              {nearbyCourses.map((course, index) => (
+                <li
+                  key={index}
+                  className="results-item"
+                  onClick={() => handleCourseClick(course)}
+                  // onMouseEnter={() => console.log("hover start")}
+                  // onMouseLeave={() => console.log("hover end")}
+                >
+                  {`${course["course_code"]} - ${course["course_title"]}`}
                 </li>
-              ))
-            )}
-          </ul>
+              ))}
+            </ul>
+          )}
         </div>
-      ) : (
+      );
+      break;
+    case "settings":
+      content = (
         <div className="content-container">
           <div id="button-container">
-            <button id="mode-button" onClick={handleSettingsClick}>
-              <FontAwesomeIcon icon={faTimes}/>
+            <button id="mode-button" onClick={() => setDisplayMode("results")}>
+              <FontAwesomeIcon icon={faTimes} />
             </button>
           </div>
           <h1 id="content-title">Settings</h1>
@@ -147,9 +162,30 @@ function Results({
             <button id="cancel-button" onClick={() => {setDisplayResults(true)}}>Cancel</button>
           </div> */}
         </div>
-      )}
-    </>
-  );
+      );
+      break;
+    case "singleCourse":
+      content = (
+        <div className="content-container">
+          <div id="button-container">
+            <button
+              id="mode-button"
+              onClick={() => {
+                setSelectedCourse(null);
+                setDisplayMode("results");
+              }}
+            >
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
+          </div>
+          <h1 id="content-title">{selectedCourse["course_code"]}</h1>
+        </div>
+      );
+      break;
+    default:
+      content = <p>Error: Invalid Display Mode. Try refreshing the page</p>;
+  }
+  return <>{content}</>;
 }
 
 // Prop validation
@@ -161,7 +197,6 @@ Results.propTypes = {
   handleDepartmentsChange: PropTypes.func,
   handleInstructorsChange: PropTypes.func,
   handleCurrProgsChange: PropTypes.func,
-  updateSettingsStates: PropTypes.func,
 };
 
 export default Results;

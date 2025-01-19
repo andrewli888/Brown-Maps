@@ -49,13 +49,18 @@ html, body {
 #mode-button:hover {
   color: #666;
 }
-#content-title {
-  margin-left: 5px;
+.content-container p {
+  margin-top: 10px;
 }
-.content-container li {
+.results-list {
+  margin-top: 10px;
+}
+.results-item {
   list-style-type: none;
-  padding: 0;
-  margin-bottom: 8px;
+  padding: 10px 5px;
+  border: solid black;
+  border-width: 1px 2px;
+  margin: 0;
 }
 .results-item:hover {
   background-color: #d9d2c1;
