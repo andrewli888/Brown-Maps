@@ -49,7 +49,7 @@ html, body {
 #mode-button:hover {
   color: #666;
 }
-.content-container p {
+.content-container .results-para {
   margin-top: 10px;
 }
 .results-list {
@@ -58,8 +58,7 @@ html, body {
 .results-item {
   list-style-type: none;
   padding: 10px 5px;
-  border: solid black;
-  border-width: 1px 2px;
+  border: 1px solid black;
   margin: 0;
 }
 .results-item:hover {
@@ -80,28 +79,16 @@ html, body {
   padding: 5px 0px;
   font-weight: bold;
 }
-/* .settings-buttons {
-  display: flex;
-  justify-content: space-evenly;
+
+/* SINGLE COURSE DISPLAY STYLES */
+#course-title {
+  margin-top: 10px;
 }
-.settings-buttons button {
-  width: 40%;
-  padding: 0.8rem;
-  border: none;
-  border-radius: 5px;
-  font-size: 1rem;
-  font-weight: bold;
-  color: #333;
+
+.course-info-section {
+  margin: 10px auto;
+  line-height: 1.2rem;
 }
-.settings-buttons button:hover {
-  cursor: pointer;
-}
-#save-button {
-  background-color: #7fd19c;
-}
-#cancel-button {
-  background-color: #ff8864;
-} */
 
 /* Toolbar styling */
 .content-container::-webkit-scrollbar {

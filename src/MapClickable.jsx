@@ -32,7 +32,13 @@ function MarkerManager({ onClick }) {
   return null;
 }
 
-function MapClickable({ marker, nearbyCoursesLocations, radius, onMapClick }) {
+function MapClickable({
+  marker,
+  radius,
+  onMapClick,
+  nearbyCoursesLocations,
+  selectedCourse,
+}) {
   // console.log(nearbyCoursesLocations);
   return (
     <MapContainer center={[41.8268, -71.4025]} zoom={17}>
@@ -41,17 +47,30 @@ function MapClickable({ marker, nearbyCoursesLocations, radius, onMapClick }) {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {marker &&
+      {marker && (
         <>
-          <Marker position={marker} icon={mainMarkerIcon}/>
+          <Marker position={marker} icon={mainMarkerIcon} />
           <Circle center={[marker["lat"], marker["lng"]]} radius={radius} />
         </>
-      }
-      {nearbyCoursesLocations &&
+      )}
+      {selectedCourse ? (
+        <Marker
+          position={{
+            "lat": selectedCourse["location_data"]["latitude"],
+            "lng": selectedCourse["location_data"]["longitude"],
+          }}
+          icon={coursesMarkerIcon}
+        ></Marker>
+      ) : (
+        nearbyCoursesLocations &&
         nearbyCoursesLocations.map((latlng, index) => (
-          <Marker key={index} position={latlng} icon={coursesMarkerIcon} ></Marker>
+          <Marker
+            key={index}
+            position={latlng}
+            icon={coursesMarkerIcon}
+          ></Marker>
         ))
-      }
+      )}
     </MapContainer>
   );
 }
@@ -66,9 +85,10 @@ MapClickable.propTypes = {
     lat: PropTypes.number,
     lng: PropTypes.number,
   }),
-  nearbyCoursesLocations: PropTypes.list,
   radius: PropTypes.number,
   onMapClick: PropTypes.func,
+  nearbyCoursesLocations: PropTypes.list,
+  selectedCourse: PropTypes.object,
 };
 
 export default MapClickable;

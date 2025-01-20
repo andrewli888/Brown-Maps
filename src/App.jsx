@@ -97,9 +97,11 @@ function App() {
   // State for the marker
   const [marker, setMarker] = useState(null);
   // States for course filters
-  const [selectedDepartments, setSelectedDepartments] = useState([]);
-  const [selectedInstructors, setSelectedInstructors] = useState([]);
-  const [selectedCurrProgs, setSelectedCurrProgs] = useState([]);
+  const [filteredDepartments, setFilteredDepartments] = useState([]);
+  const [filteredInstructors, setFilteredInstructors] = useState([]);
+  const [filteredCurrProgs, setFilteredCurrProgs] = useState([]);
+  // State for the course selected by user, if exists
+  const [selectedCourse, setSelectedCourse] = useState(null);
 
   // Calculate values from state
   const nearbyCourses =
@@ -107,28 +109,27 @@ function App() {
       ? null
       : getNearbyCourses(
           marker,
-          selectedDepartments,
-          selectedInstructors,
-          selectedCurrProgs
+          filteredDepartments,
+          filteredInstructors,
+          filteredCurrProgs
         );
-
   // Get a list of unique latlng locations of the nearby courses
   const nearbyCoursesLocations =
     nearbyCourses == null ? null : getUniqueLocations(nearbyCourses);
 
-  // Event handlers for Results component
+  /* Event handlers for Results component */
   // Changes to filter settings
   const handleDepartmentsChange = (selected) => {
-    setSelectedDepartments(selected.map((item) => item["value"]));
+    setFilteredDepartments(selected.map((item) => item["value"]));
   };
   const handleInstructorsChange = (selected) => {
-    setSelectedInstructors(selected.map((item) => item["value"]));
+    setFilteredInstructors(selected.map((item) => item["value"]));
   };
   const handleCurrProgsChange = (selected) => {
-    setSelectedCurrProgs(selected.map((item) => item["value"]));
+    setFilteredCurrProgs(selected.map((item) => item["value"]));
   };
 
-  // Event handlers for Map component
+  /* Event handlers for Map component */
   function handleMapClick(latlng) {
     setMarker(latlng);
   }
@@ -137,18 +138,21 @@ function App() {
     <>
       <Results
         nearbyCourses={nearbyCourses}
-        selectedDepartments={selectedDepartments}
-        selectedInstructors={selectedInstructors}
-        selectedCurrProgs={selectedCurrProgs}
+        filteredDepartments={filteredDepartments}
+        filteredInstructors={filteredInstructors}
+        filteredCurrProgs={filteredCurrProgs}
         handleDepartmentsChange={handleDepartmentsChange}
         handleInstructorsChange={handleInstructorsChange}
         handleCurrProgsChange={handleCurrProgsChange}
+        selectedCourse={selectedCourse}
+        setSelectedCourse={setSelectedCourse}
       />
       <MapClickable
         marker={marker}
-        nearbyCoursesLocations={nearbyCoursesLocations}
         radius={WALKDISTANCE}
         onMapClick={handleMapClick}
+        nearbyCoursesLocations={nearbyCoursesLocations}
+        selectedCourse={selectedCourse}
       />
     </>
   );

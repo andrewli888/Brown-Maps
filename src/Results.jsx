@@ -22,21 +22,16 @@ const currProgOptions = formatForSelect(
 
 function Results({
   nearbyCourses,
-  selectedDepartments,
-  selectedInstructors,
-  selectedCurrProgs,
+  filteredDepartments,
+  filteredInstructors,
+  filteredCurrProgs,
   handleDepartmentsChange,
   handleInstructorsChange,
   handleCurrProgsChange,
+  selectedCourse,
+  setSelectedCourse,
 }) {
   const [displayMode, setDisplayMode] = useState("results");
-  // The course that the user is viewing, if it exists
-  const [selectedCourse, setSelectedCourse] = useState(null);
-
-  const handleCourseClick = (course) => {
-    setDisplayMode("singleCourse");
-    setSelectedCourse(course);
-  };
 
   // Determine the content based on display mode
   let content;
@@ -51,16 +46,21 @@ function Results({
           </div>
           <h1 id="content-title">Nearby Courses</h1>
           {nearbyCourses === null ? (
-            <p>Click on the map to find nearby courses!</p>
+            <p className="results-para">
+              Click on the map to find nearby courses!
+            </p>
           ) : nearbyCourses.length === 0 ? (
-            <p>No nearby courses found.</p>
+            <p className="results-para">No nearby courses found.</p>
           ) : (
             <ul className="results-list">
               {nearbyCourses.map((course, index) => (
                 <li
                   key={index}
                   className="results-item"
-                  onClick={() => handleCourseClick(course)}
+                  onClick={() => {
+                    setSelectedCourse(course);
+                    setDisplayMode("singleCourse");
+                  }}
                   // onMouseEnter={() => console.log("hover start")}
                   // onMouseLeave={() => console.log("hover end")}
                 >
@@ -87,21 +87,21 @@ function Results({
               labelText="Department"
               inputId="departmentSelect"
               selectOptions={departmentOptions}
-              value={formatForSelect(selectedDepartments)}
+              value={formatForSelect(filteredDepartments)}
               handleChange={handleDepartmentsChange}
             />
             <FilterSection
               labelText="Instructor"
               inputId="instructorSelect"
               selectOptions={instructorOptions}
-              value={formatForSelect(selectedInstructors)}
+              value={formatForSelect(filteredInstructors)}
               handleChange={handleInstructorsChange}
             />
             <FilterSection
               labelText="Curricular Program"
               inputId="curricularProgSelect"
               selectOptions={currProgOptions}
-              value={formatForSelect(selectedCurrProgs)}
+              value={formatForSelect(filteredCurrProgs)}
               handleChange={handleCurrProgsChange}
             />
           </div>
@@ -155,12 +155,6 @@ function Results({
               </label>
             </div>
           </div>
-          {/* <div className="settings-buttons">
-            <button id="save-button" onClick={handleSaveSettings}>
-              Save
-            </button>
-            <button id="cancel-button" onClick={() => {setDisplayResults(true)}}>Cancel</button>
-          </div> */}
         </div>
       );
       break;
@@ -179,11 +173,81 @@ function Results({
             </button>
           </div>
           <h1 id="content-title">{selectedCourse["course_code"]}</h1>
+          <h2 id="course-title">{selectedCourse["course_title"]}</h2>
+          <div className="course-info-section">
+            <h3>Description</h3>
+            <p className="course-description">
+              {selectedCourse["course_description"] ?? "No Description"}
+            </p>
+          </div>
+          <div className="course-info-section">
+            <h3>Enrollment Information</h3>
+            <p>
+              <strong>Limit:</strong> {selectedCourse["enrollment_limit"] ?? "No Limit"}
+            </p>
+            <p>
+              <strong>Total Enrolled:</strong> {selectedCourse["enrollment_total"] ?? "No Data"}
+            </p>
+            <p>
+              <strong>Remaining Seats:</strong> {selectedCourse["enrollment_remaining"] ?? "N/A"}
+            </p>
+            <details>
+              <summary><strong>Enrollment Breakdown</strong></summary>
+              <p>
+                Freshmen: {selectedCourse["enrollment_freshmen"] ?? "N/A"}
+              </p>
+              <p>
+                Sophomores: {selectedCourse["enrollment_sophomores"] ?? "N/A"}
+              </p>
+              <p>
+                Juniors: {selectedCourse["enrollment_juniors"] ?? "N/A"}
+              </p>
+              <p>
+                Seniors: {selectedCourse["enrollment_seniors"] ?? "N/A"}
+              </p>
+              <p>
+                Graduates: {selectedCourse["enrollment_graduates"] ?? "N/A"}
+              </p>
+              <p>
+                Other: {selectedCourse["enrollment_other"] ?? "N/A"}
+              </p>
+            </details>
+          </div>
+          <div className="course-info-section">
+            <h3>Registration Restrictions</h3>
+            <p>
+              {selectedCourse["registration_restrictions"] ?? "N/A"}
+            </p>
+          </div>
+          <div className="course-info-section">
+            <h3>Course Meeting Time</h3>
+            <p className="course-meeting-time">
+            {selectedCourse["course_meeting_time"] ?? "N/A"}
+            </p>
+          </div>
+          <div className="course-info-section">
+            <h3>Course Location</h3>
+            <p className="course-location">
+              {selectedCourse["course_location"] ?? "N/A"}
+            </p>
+          </div>
+          <div className="course-info-section">
+            <h3>Instructor Information</h3>
+            <p className="instructor-information">
+              {selectedCourse["instructor_information"] ?? "N/A"}
+            </p>
+          </div>
+          <div className="course-info-section">
+            <h3>Exam Date</h3>
+            <p className="exam-datetime">
+              {selectedCourse["exam_datetime"] ?? "N/A"}
+            </p>
+          </div>
         </div>
       );
       break;
     default:
-      content = <p>Error: Invalid Display Mode. Try refreshing the page</p>;
+      content = <p>Error: Invalid display mode. Try refreshing the page</p>;
   }
   return <>{content}</>;
 }
@@ -191,12 +255,14 @@ function Results({
 // Prop validation
 Results.propTypes = {
   nearbyCourses: PropTypes.list,
-  selectedDepartments: PropTypes.list,
-  selectedInstructors: PropTypes.list,
-  selectedCurrProgs: PropTypes.list,
+  filteredDepartments: PropTypes.list,
+  filteredInstructors: PropTypes.list,
+  filteredCurrProgs: PropTypes.list,
   handleDepartmentsChange: PropTypes.func,
   handleInstructorsChange: PropTypes.func,
   handleCurrProgsChange: PropTypes.func,
+  selectedCourse: PropTypes.object,
+  setSelectedCourse: PropTypes.func,
 };
 
 export default Results;
