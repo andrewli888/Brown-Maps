@@ -81,6 +81,20 @@ html, body {
   font-weight: bold;
 }
 
+.time-option {
+  margin: 5px auto; /* Space between options */
+}
+.time-option label {
+  margin: auto 5px; /* Spacing between label and input */
+}
+.time-option input[type="time"] {
+  vertical-align: middle; /* Aligns time input with text */
+}
+#day-of-week, #time-input {
+  height: 1.2rem;
+  margin-left: 1rem;
+}
+
 /* SINGLE COURSE DISPLAY STYLES */
 #course-title {
   margin-top: 10px;

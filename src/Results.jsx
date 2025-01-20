@@ -25,30 +25,36 @@ function Results({
   filteredDepartments,
   filteredInstructors,
   filteredCurrProgs,
+  timePreference,
+  customDay,
+  customTime,
+  selectedCourse,
   handleDepartmentsChange,
   handleInstructorsChange,
   handleCurrProgsChange,
-  selectedCourse,
+  handleTimePreferenceChange,
+  handleDayChange,
+  handleTimeChange,
   setSelectedCourse,
 }) {
   const [displayMode, setDisplayMode] = useState("results");
+
   // Keep track of scroll position of results list
   const resultsListScrollPos = useRef(null);
-
   // If user switches to singleCourse mode, scroll to top
   useEffect(() => {
     if (displayMode === "singleCourse") {
-      const contentContainer = document.getElementById('content-container');
+      const contentContainer = document.getElementById("content-container");
       contentContainer.scrollTop = 0;
     }
   }, [displayMode]);
   // When user switches to results mode, restore scroll position
   useEffect(() => {
     if (displayMode === "results") {
-      const contentContainer = document.getElementById('content-container');
+      const contentContainer = document.getElementById("content-container");
       contentContainer.scrollTop = resultsListScrollPos.current ?? 0;
     }
-  }, [displayMode])
+  }, [displayMode]);
 
   // Determine the content based on display mode
   let content;
@@ -76,7 +82,8 @@ function Results({
                   className="results-item"
                   onClick={() => {
                     // Save current scroll position
-                    const resultsListElement = document.getElementById('content-container')
+                    const resultsListElement =
+                      document.getElementById("content-container");
                     resultsListScrollPos.current = resultsListElement.scrollTop;
                     // Switch to single course mode
                     setSelectedCourse(course);
@@ -126,52 +133,62 @@ function Results({
           </div>
           <div className="settings-section-container">
             <h2>Time Settings</h2>
-            <div className="input-container">
+            <div className="time-option">
               <input
                 type="radio"
-                id="current-time-radio"
-                name="time-option"
+                id="any-time"
+                name="time-preference"
+                value="any"
+                checked={timePreference === "any"}
+                onChange={handleTimePreferenceChange}
+              />
+              <label htmlFor="any-time">Any Time</label>
+            </div>
+            {/* <div className="time-option">
+              <input
+                type="radio"
+                id="current-time"
+                name="time-preference"
                 value="current"
-                checked
+                checked={timePreference === "current"}
+                onChange={handleTimePreferenceChange}
               />
-              <label htmlFor="current-time-radio">Use Current Time</label>
-            </div>
-
-            <div className="input-container">
+              <label htmlFor="current-time">Use Current Time</label>
+            </div> */}
+            <div className="time-option">
               <input
                 type="radio"
-                id="custom-time-radio"
-                name="time-option"
+                id="custom-time"
+                name="time-preference"
                 value="custom"
+                checked={timePreference === "custom"}
+                onChange={handleTimePreferenceChange}
               />
-              <label htmlFor="custom-time-radio">Select Custom Time</label>
-            </div>
-          </div>
-          <div className="settings-section-container">
-            <h2>Location Settings</h2>
-            <div className="input-container">
-              <input
-                type="radio"
-                id="current-location-radio"
-                name="location-option"
-                value="current"
-                checked
-              />
-              <label htmlFor="current-location-radio">
-                Use Current Location
-              </label>
-            </div>
-
-            <div className="input-container">
-              <input
-                type="radio"
-                id="custom-location-radio"
-                name="location-option"
-                value="custom"
-              />
-              <label htmlFor="custom-location-radio">
-                Select Custom Location
-              </label>
+              <label htmlFor="custom-time">Custom Time:</label>
+              <div id="custom-time-options">
+                <select
+                  id="day-of-week"
+                  name="day-of-week"
+                  value={customDay}
+                  onChange={handleDayChange}
+                >
+                  <option value="monday">Monday</option>
+                  <option value="tuesday">Tuesday</option>
+                  <option value="wednesday">Wednesday</option>
+                  <option value="thursday">Thursday</option>
+                  <option value="friday">Friday</option>
+                  <option value="saturday">Saturday</option>
+                  <option value="sunday">Sunday</option>
+                  <option value="anyday">Any Day</option>
+                </select>
+                <input
+                  type="time"
+                  id="time-input"
+                  name="custom-time"
+                  value={customTime}
+                  onChange={handleTimeChange}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -203,46 +220,41 @@ function Results({
           <div className="course-info-section">
             <h3>Enrollment Information</h3>
             <p>
-              <strong>Limit:</strong> {selectedCourse["enrollment_limit"] ?? "No Limit"}
+              <strong>Limit:</strong>{" "}
+              {selectedCourse["enrollment_limit"] ?? "No Limit"}
             </p>
             <p>
-              <strong>Total Enrolled:</strong> {selectedCourse["enrollment_total"] ?? "No Data"}
+              <strong>Total Enrolled:</strong>{" "}
+              {selectedCourse["enrollment_total"] ?? "No Data"}
             </p>
             <p>
-              <strong>Remaining Seats:</strong> {selectedCourse["enrollment_remaining"] ?? "N/A"}
+              <strong>Remaining Seats:</strong>{" "}
+              {selectedCourse["enrollment_remaining"] ?? "N/A"}
             </p>
             <details>
-              <summary><strong>Enrollment Breakdown</strong></summary>
-              <p>
-                Freshmen: {selectedCourse["enrollment_freshmen"] ?? "N/A"}
-              </p>
+              <summary>
+                <strong>Enrollment Breakdown</strong>
+              </summary>
+              <p>Freshmen: {selectedCourse["enrollment_freshmen"] ?? "N/A"}</p>
               <p>
                 Sophomores: {selectedCourse["enrollment_sophomores"] ?? "N/A"}
               </p>
-              <p>
-                Juniors: {selectedCourse["enrollment_juniors"] ?? "N/A"}
-              </p>
-              <p>
-                Seniors: {selectedCourse["enrollment_seniors"] ?? "N/A"}
-              </p>
+              <p>Juniors: {selectedCourse["enrollment_juniors"] ?? "N/A"}</p>
+              <p>Seniors: {selectedCourse["enrollment_seniors"] ?? "N/A"}</p>
               <p>
                 Graduates: {selectedCourse["enrollment_graduates"] ?? "N/A"}
               </p>
-              <p>
-                Other: {selectedCourse["enrollment_other"] ?? "N/A"}
-              </p>
+              <p>Other: {selectedCourse["enrollment_other"] ?? "N/A"}</p>
             </details>
           </div>
           <div className="course-info-section">
             <h3>Registration Restrictions</h3>
-            <p>
-              {selectedCourse["registration_restrictions"] ?? "N/A"}
-            </p>
+            <p>{selectedCourse["registration_restrictions"] ?? "N/A"}</p>
           </div>
           <div className="course-info-section">
             <h3>Course Meeting Time</h3>
             <p className="course-meeting-time">
-            {selectedCourse["course_meeting_time"] ?? "N/A"}
+              {selectedCourse["course_meeting_time"] ?? "N/A"}
             </p>
           </div>
           <div className="course-info-section">
@@ -278,10 +290,16 @@ Results.propTypes = {
   filteredDepartments: PropTypes.list,
   filteredInstructors: PropTypes.list,
   filteredCurrProgs: PropTypes.list,
+  timePreference: PropTypes.str,
+  customDay: PropTypes.str,
+  customTime: PropTypes.str,
+  selectedCourse: PropTypes.object,
   handleDepartmentsChange: PropTypes.func,
   handleInstructorsChange: PropTypes.func,
   handleCurrProgsChange: PropTypes.func,
-  selectedCourse: PropTypes.object,
+  handleTimePreferenceChange: PropTypes.func,
+  handleDayChange: PropTypes.func,
+  handleTimeChange: PropTypes.func,
   setSelectedCourse: PropTypes.func,
 };
 

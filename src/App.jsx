@@ -1,97 +1,15 @@
 import MapClickable from "./MapClickable.jsx";
 import Results from "./Results.jsx";
-import { useState } from "react";
-import { getDistance } from "geolib";
-import courseData from "./data/course_data.json";
+import { useState, useEffect } from "react";
+import {
+  formatTime,
+  getCurrentESTDateTime,
+  filterCourses,
+  getNearbyCourses,
+  getUniqueLocations,
+} from "./helpers.js";
 
 const WALKDISTANCE = 300; // Using 300m as estimate for 5 minute walk
-
-// Filter courses by user-selected filters
-function filterCourses(departments, instructors, currProgs) {
-  return courseData.filter((course) => {
-    // Check the user applied filters
-    if (departments.length > 0 && course["course_code"]) {
-      const courseDept = course["course_code"].split(" ")[0];
-      if (!departments.includes(courseDept)) {
-        return false;
-      }
-    }
-    if (instructors.length > 0 && course["instructor_information"]) {
-      const courseInstructorInfo = course["instructor_information"];
-      // Checks if any selected instructor name is a substring of the current course's instructor data
-      if (
-        !instructors.some((instructorName) =>
-          courseInstructorInfo.includes(instructorName)
-        )
-      ) {
-        return false;
-      }
-    }
-    if (currProgs.length > 0 && course["curricular_programs"]) {
-      const courseCurrProgs = course["curricular_programs"];
-      // Checks if any selected currprog is a substring of the current course's currprog data
-      if (
-        !currProgs.some((currProgName) =>
-          courseCurrProgs.includes(currProgName)
-        )
-      ) {
-        return false;
-      }
-    }
-    // Passed all filters
-    return true;
-  });
-}
-
-function getNearbyCourses(latlng, departments, instructors, currProgs) {
-  const filteredCourses = filterCourses(departments, instructors, currProgs);
-  return filteredCourses.filter((course) => {
-    // Check the location
-    if (
-      course["course_location"] == null ||
-      course["location_data"]["api_address"] == "api error"
-    ) {
-      return false;
-    }
-    const distanceInMeters = getDistance(
-      {
-        latitude: latlng["lat"],
-        longitude: latlng["lng"],
-      },
-      {
-        latitude: course["location_data"]["latitude"],
-        longitude: course["location_data"]["longitude"],
-      }
-    );
-    return distanceInMeters <= WALKDISTANCE;
-  });
-}
-
-// Takes a list of course data, returns a list of unique latlng locations of the courses
-function getUniqueLocations(courses) {
-  let uniqueLocations = [];
-  for (const course of courses) {
-    const courseLat = course["location_data"]["latitude"];
-    const courseLng = course["location_data"]["longitude"];
-    let isDuplicate = false;
-    // Check all previous locations (might want to make more efficient with Map)
-    for (const location of uniqueLocations) {
-      if (location["lat"] == courseLat && location["lng"] == courseLng) {
-        isDuplicate = true;
-        break;
-      }
-    }
-    // New location found
-    if (!isDuplicate) {
-      uniqueLocations.push({
-        lat: courseLat,
-        lng: courseLng,
-      });
-    }
-  }
-
-  return uniqueLocations;
-}
 
 function App() {
   // State for the marker
@@ -100,22 +18,12 @@ function App() {
   const [filteredDepartments, setFilteredDepartments] = useState([]);
   const [filteredInstructors, setFilteredInstructors] = useState([]);
   const [filteredCurrProgs, setFilteredCurrProgs] = useState([]);
+  // States for time settings
+  const [timePreference, setTimePreference] = useState("any");
+  const [customDay, setCustomDay] = useState("anyday");
+  const [customTime, setCustomTime] = useState("09:00");
   // State for the course selected by user, if exists
   const [selectedCourse, setSelectedCourse] = useState(null);
-
-  // Calculate values from state
-  const nearbyCourses =
-    marker == null
-      ? null
-      : getNearbyCourses(
-          marker,
-          filteredDepartments,
-          filteredInstructors,
-          filteredCurrProgs
-        );
-  // Get a list of unique latlng locations of the nearby courses
-  const nearbyCoursesLocations =
-    nearbyCourses == null ? null : getUniqueLocations(nearbyCourses);
 
   /* Event handlers for Results component */
   // Changes to filter settings
@@ -128,11 +36,56 @@ function App() {
   const handleCurrProgsChange = (selected) => {
     setFilteredCurrProgs(selected.map((item) => item["value"]));
   };
-
+  // Changes to time settings
+  const handleTimePreferenceChange = (event) => {
+    setTimePreference(event.target.value);
+  };
+  const handleDayChange = (event) => {
+    setTimePreference("custom");
+    setCustomDay(event.target.value);
+  };
+  const handleTimeChange = (event) => {
+    setTimePreference("custom");
+    setCustomTime(event.target.value);
+  };
   /* Event handlers for Map component */
   function handleMapClick(latlng) {
     setMarker(latlng);
   }
+
+  // Sync customDay, customTime with current time
+  // useEffect(() => {
+  //   if (timePreference == "current") {
+  //     const intervalId = setInterval(() => {
+  //       const [currentDay, currentTime] = getCurrentESTDateTime();
+  //       setCustomDay(currentDay);
+  //       setCustomTime(currentTime);
+  //     }, 60000); // Update every minute
+  //     return () => clearInterval(intervalId); // Cleanup
+  //   }
+  // }, [timePreference]);
+
+  // Check if user has filtered a custom time
+  const [filteredDay, filteredTime] =
+    timePreference == "any" ? [null, null] : formatTime(customDay, customTime);
+  // Lookup nearby courses within the filtered courses
+  const nearbyCourses =
+    marker == null
+      ? null
+      : getNearbyCourses(
+          marker,
+          filterCourses(
+            filteredDepartments,
+            filteredInstructors,
+            filteredCurrProgs,
+            filteredDay,
+            filteredTime
+          ),
+          WALKDISTANCE
+        );
+  // Get a list of unique latlng locations of the nearby courses
+  const nearbyCoursesLocations =
+    nearbyCourses == null ? null : getUniqueLocations(nearbyCourses);
 
   return (
     <>
@@ -141,10 +94,16 @@ function App() {
         filteredDepartments={filteredDepartments}
         filteredInstructors={filteredInstructors}
         filteredCurrProgs={filteredCurrProgs}
+        timePreference={timePreference}
+        customDay={customDay}
+        customTime={customTime}
+        selectedCourse={selectedCourse}
         handleDepartmentsChange={handleDepartmentsChange}
         handleInstructorsChange={handleInstructorsChange}
         handleCurrProgsChange={handleCurrProgsChange}
-        selectedCourse={selectedCourse}
+        handleTimePreferenceChange={handleTimePreferenceChange}
+        handleDayChange={handleDayChange}
+        handleTimeChange={handleTimeChange}
         setSelectedCourse={setSelectedCourse}
       />
       <MapClickable
