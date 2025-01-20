@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import FilterSection from "./FilterSection.jsx";
 import PropTypes from "prop-types";
 // Icons for Settings button and Close button
@@ -32,19 +32,36 @@ function Results({
   setSelectedCourse,
 }) {
   const [displayMode, setDisplayMode] = useState("results");
+  // Keep track of scroll position of results list
+  const resultsListScrollPos = useRef(null);
+
+  // If user switches to singleCourse mode, scroll to top
+  useEffect(() => {
+    if (displayMode === "singleCourse") {
+      const contentContainer = document.getElementById('content-container');
+      contentContainer.scrollTop = 0;
+    }
+  }, [displayMode]);
+  // When user switches to results mode, restore scroll position
+  useEffect(() => {
+    if (displayMode === "results") {
+      const contentContainer = document.getElementById('content-container');
+      contentContainer.scrollTop = resultsListScrollPos.current ?? 0;
+    }
+  }, [displayMode])
 
   // Determine the content based on display mode
   let content;
   switch (displayMode) {
     case "results":
       content = (
-        <div className="content-container">
+        <div id="content-container">
           <div id="button-container">
             <button id="mode-button" onClick={() => setDisplayMode("settings")}>
               <FontAwesomeIcon icon={faCog} />
             </button>
           </div>
-          <h1 id="content-title">Nearby Courses</h1>
+          <h1 className="content-title">Nearby Courses</h1>
           {nearbyCourses === null ? (
             <p className="results-para">
               Click on the map to find nearby courses!
@@ -52,17 +69,19 @@ function Results({
           ) : nearbyCourses.length === 0 ? (
             <p className="results-para">No nearby courses found.</p>
           ) : (
-            <ul className="results-list">
+            <ul id="results-list">
               {nearbyCourses.map((course, index) => (
                 <li
                   key={index}
                   className="results-item"
                   onClick={() => {
+                    // Save current scroll position
+                    const resultsListElement = document.getElementById('content-container')
+                    resultsListScrollPos.current = resultsListElement.scrollTop;
+                    // Switch to single course mode
                     setSelectedCourse(course);
                     setDisplayMode("singleCourse");
                   }}
-                  // onMouseEnter={() => console.log("hover start")}
-                  // onMouseLeave={() => console.log("hover end")}
                 >
                   {`${course["course_code"]} - ${course["course_title"]}`}
                 </li>
@@ -74,13 +93,13 @@ function Results({
       break;
     case "settings":
       content = (
-        <div className="content-container">
+        <div id="content-container">
           <div id="button-container">
             <button id="mode-button" onClick={() => setDisplayMode("results")}>
               <FontAwesomeIcon icon={faTimes} />
             </button>
           </div>
-          <h1 id="content-title">Settings</h1>
+          <h1 className="content-title">Settings</h1>
           <div className="settings-section-container">
             <h2>Filter Settings</h2>
             <FilterSection
@@ -160,11 +179,12 @@ function Results({
       break;
     case "singleCourse":
       content = (
-        <div className="content-container">
+        <div id="content-container">
           <div id="button-container">
             <button
               id="mode-button"
               onClick={() => {
+                // Switch to results mode
                 setSelectedCourse(null);
                 setDisplayMode("results");
               }}
@@ -172,7 +192,7 @@ function Results({
               <FontAwesomeIcon icon={faTimes} />
             </button>
           </div>
-          <h1 id="content-title">{selectedCourse["course_code"]}</h1>
+          <h1 className="content-title">{selectedCourse["course_code"]}</h1>
           <h2 id="course-title">{selectedCourse["course_title"]}</h2>
           <div className="course-info-section">
             <h3>Description</h3>
