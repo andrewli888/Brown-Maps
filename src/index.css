@@ -95,6 +95,13 @@ html, body {
   margin-left: 1rem;
 }
 
+.slider-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1rem auto;
+}
+
 /* SINGLE COURSE DISPLAY STYLES */
 #course-title {
   margin-top: 10px;

@@ -28,6 +28,7 @@ function Results({
   timePreference,
   customDay,
   customTime,
+  markerRadius,
   selectedCourse,
   handleDepartmentsChange,
   handleInstructorsChange,
@@ -35,6 +36,7 @@ function Results({
   handleTimePreferenceChange,
   handleDayChange,
   handleTimeChange,
+  setMarkerRadius,
   setSelectedCourse,
 }) {
   const [displayMode, setDisplayMode] = useState("results");
@@ -191,6 +193,24 @@ function Results({
               </div>
             </div>
           </div>
+          <div className="settings-section-container">
+            <h2>Distance Settings</h2>
+            <div className="slider-container">
+              <label htmlFor="markerRadiusSlider">
+                {`Marker Radius: ${markerRadius} meters`}
+              </label>
+              <input
+                  type="range"
+                  id="markerRadiusSlider"
+                  min="50"
+                  max="500"
+                  value={markerRadius}
+                  onChange={event => {
+                    setMarkerRadius(parseInt(event.target.value));
+                  }}
+              />
+            </div>
+          </div>
         </div>
       );
       break;
@@ -293,6 +313,7 @@ Results.propTypes = {
   timePreference: PropTypes.str,
   customDay: PropTypes.str,
   customTime: PropTypes.str,
+  markerRadius: PropTypes.number,
   selectedCourse: PropTypes.object,
   handleDepartmentsChange: PropTypes.func,
   handleInstructorsChange: PropTypes.func,
@@ -300,6 +321,7 @@ Results.propTypes = {
   handleTimePreferenceChange: PropTypes.func,
   handleDayChange: PropTypes.func,
   handleTimeChange: PropTypes.func,
+  setMarkerRadius: PropTypes.func,
   setSelectedCourse: PropTypes.func,
 };
 

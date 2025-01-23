@@ -3,13 +3,12 @@ import Results from "./Results.jsx";
 import { useState, useEffect } from "react";
 import {
   formatTime,
-  getCurrentESTDateTime,
   filterCourses,
   getNearbyCourses,
   getUniqueLocations,
 } from "./helpers.js";
 
-const WALKDISTANCE = 300; // Using 300m as estimate for 5 minute walk
+const FIVEMINUTEWALK = 300; // Using 300m as estimate for 5 minute walk
 
 function App() {
   // State for the marker
@@ -22,6 +21,8 @@ function App() {
   const [timePreference, setTimePreference] = useState("any");
   const [customDay, setCustomDay] = useState("anyday");
   const [customTime, setCustomTime] = useState("09:00");
+  // State for distance setting
+  const [markerRadius, setMarkerRadius] = useState(FIVEMINUTEWALK); // In meters
   // State for the course selected by user, if exists
   const [selectedCourse, setSelectedCourse] = useState(null);
 
@@ -81,7 +82,7 @@ function App() {
             filteredDay,
             filteredTime
           ),
-          WALKDISTANCE
+          markerRadius
         );
   // Get a list of unique latlng locations of the nearby courses
   const nearbyCoursesLocations =
@@ -97,6 +98,7 @@ function App() {
         timePreference={timePreference}
         customDay={customDay}
         customTime={customTime}
+        markerRadius={markerRadius}
         selectedCourse={selectedCourse}
         handleDepartmentsChange={handleDepartmentsChange}
         handleInstructorsChange={handleInstructorsChange}
@@ -104,11 +106,12 @@ function App() {
         handleTimePreferenceChange={handleTimePreferenceChange}
         handleDayChange={handleDayChange}
         handleTimeChange={handleTimeChange}
+        setMarkerRadius={setMarkerRadius}
         setSelectedCourse={setSelectedCourse}
       />
       <MapClickable
         marker={marker}
-        radius={WALKDISTANCE}
+        radius={markerRadius}
         onMapClick={handleMapClick}
         nearbyCoursesLocations={nearbyCoursesLocations}
         selectedCourse={selectedCourse}
