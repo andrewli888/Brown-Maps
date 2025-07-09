@@ -11,15 +11,59 @@ html, body {
   justify-content: center;
   align-items: center;
   background-color: #f3e4d7;
-  font-family: Arial, sans-serif; /* Optional: default font */
+  font-family: Arial, sans-serif;
 }
 
 #root {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+
   height: 90%;
   width: 90%;
-  /* justify-content: center;
-  align-items: center;  */
+  color: #333;
+}
+
+#disclaimer-container {
+  background-color: #d4eaf7;
+  border: 2px solid #a9cce3;
+  border-radius: 4px;
+  padding: 10px;
+
+  display: flex;
+  flex-basis: 100px;
+  flex-shrink: 0; 
+  justify-content: center;
+  align-items: center;
+  
+  position: relative;
+  padding-right: 40px;
+}
+
+.close-disclaimer-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+
+  background: none;
+  border: none;
+  padding: 0;
+  
+  font-size: 1.3rem;
+  color: #333;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.close-disclaimer-btn:hover {
+  color: #000;
+}
+
+#main-container {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  min-height: 0;
   color: #333;
 }
 
@@ -132,9 +176,19 @@ html, body {
 
 /* For mobile devices */
 @media (max-width: 768px) {
-  #root {
+  #disclaimer-container {
+    flex-basis: 10%; 
+    padding-right: 40px;
+  }
+
+  #disclaimer-container h3 {
+    font-size: 0.8rem; /* or 12px-13px */
+  }
+
+  #main-container {
     flex-direction: column;
-    height: 100%;
+    /* Allow container to scroll if content overflows on small heights */
+    overflow-y: auto;
   }
 
   #content-container {
@@ -145,7 +199,7 @@ html, body {
 
   .leaflet-container {
     order: 1;
-    height: 40%;
+    height: 60vh;
     margin: 10px auto;
   }
 }

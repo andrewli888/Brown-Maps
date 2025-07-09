@@ -1,16 +1,21 @@
 import MapClickable from "./MapClickable.jsx";
 import Results from "./Results.jsx";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+
 import {
   formatTime,
   filterCourses,
   getNearbyCourses,
   getUniqueLocations,
 } from "./helpers.js";
+import Disclaimer from "./Disclaimer.jsx";
 
 const FIVEMINUTEWALK = 300; // Using 300m as estimate for 5 minute walk
 
 function App() {
+  // State for the disclaimer header
+  const [isDisclaimerVisible, setIsDisclaimerVisible] = useState(true);
+
   // State for the marker
   const [marker, setMarker] = useState(null);
   // States for course filters
@@ -26,6 +31,10 @@ function App() {
   // State for the course selected by user, if exists
   const [selectedCourse, setSelectedCourse] = useState(null);
 
+  /* Event handlers for the disclaimer header */
+  const handleCloseDisclaimer = () => {
+    setIsDisclaimerVisible(false);
+  }
   /* Event handlers for Results component */
   // Changes to filter settings
   const handleDepartmentsChange = (selected) => {
@@ -90,32 +99,39 @@ function App() {
 
   return (
     <>
-      <Results
-        nearbyCourses={nearbyCourses}
-        filteredDepartments={filteredDepartments}
-        filteredInstructors={filteredInstructors}
-        filteredCurrProgs={filteredCurrProgs}
-        timePreference={timePreference}
-        customDay={customDay}
-        customTime={customTime}
-        markerRadius={markerRadius}
-        selectedCourse={selectedCourse}
-        handleDepartmentsChange={handleDepartmentsChange}
-        handleInstructorsChange={handleInstructorsChange}
-        handleCurrProgsChange={handleCurrProgsChange}
-        handleTimePreferenceChange={handleTimePreferenceChange}
-        handleDayChange={handleDayChange}
-        handleTimeChange={handleTimeChange}
-        setMarkerRadius={setMarkerRadius}
-        setSelectedCourse={setSelectedCourse}
-      />
-      <MapClickable
-        marker={marker}
-        radius={markerRadius}
-        onMapClick={handleMapClick}
-        nearbyCoursesLocations={nearbyCoursesLocations}
-        selectedCourse={selectedCourse}
-      />
+      {isDisclaimerVisible && (
+        <div id="disclaimer-container">
+          <Disclaimer handleCloseDisclaimer={handleCloseDisclaimer}/>
+        </div>
+      )}
+      <div id="main-container">
+        <Results
+          nearbyCourses={nearbyCourses}
+          filteredDepartments={filteredDepartments}
+          filteredInstructors={filteredInstructors}
+          filteredCurrProgs={filteredCurrProgs}
+          timePreference={timePreference}
+          customDay={customDay}
+          customTime={customTime}
+          markerRadius={markerRadius}
+          selectedCourse={selectedCourse}
+          handleDepartmentsChange={handleDepartmentsChange}
+          handleInstructorsChange={handleInstructorsChange}
+          handleCurrProgsChange={handleCurrProgsChange}
+          handleTimePreferenceChange={handleTimePreferenceChange}
+          handleDayChange={handleDayChange}
+          handleTimeChange={handleTimeChange}
+          setMarkerRadius={setMarkerRadius}
+          setSelectedCourse={setSelectedCourse}
+        />
+        <MapClickable
+          marker={marker}
+          radius={markerRadius}
+          onMapClick={handleMapClick}
+          nearbyCoursesLocations={nearbyCoursesLocations}
+          selectedCourse={selectedCourse}
+        />
+      </div>
     </>
   );
 }
