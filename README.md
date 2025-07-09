@@ -1,3 +1,3 @@
 # Brown Maps
 
-Website that maps out the course offerings at Brown
+[Website](https://andrewli888.github.io/Brown-Maps/) that maps out the course offerings at Brown
