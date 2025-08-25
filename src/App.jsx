@@ -14,7 +14,7 @@ const FIVEMINUTEWALK = 300; // Using 300m as estimate for 5 minute walk
 
 function App() {
   // State for the disclaimer header
-  const [isDisclaimerVisible, setIsDisclaimerVisible] = useState(true);
+  const [isDisclaimerVisible, setIsDisclaimerVisible] = useState(false);
 
   // State for the marker
   const [marker, setMarker] = useState(null);

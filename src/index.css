@@ -156,6 +156,11 @@ html, body {
   line-height: 1.2rem;
 }
 
+summary::marker {
+  /* This makes the marker itself interactive */
+  cursor: pointer;
+}
+
 /* Toolbar styling */
 #content-container::-webkit-scrollbar {
   width: 8px; /* Adjust width */
