@@ -92,7 +92,11 @@ export function filterCourses(
     // Custom Time Filter
     if (dayOfWeek != null) {
       let timeMatches = false;
-      for (const meetingTime of course["formatted_meeting_times"]) {
+      if (course['course_meeting_times'] == null) {
+        console.log(course);
+      }
+
+      for (const meetingTime of course["course_meeting_times"]) {
         // Check that meeting day and meeting time match
         if (
           (dayOfWeek === DAYOFWEEKMAPPINGS.anyday ||
